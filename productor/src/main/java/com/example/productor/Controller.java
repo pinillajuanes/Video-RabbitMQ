@@ -1,21 +1,20 @@
 package com.example.productor;
 
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class Controller {
 
-    private final Productor productor;
+    private Productor productor;
 
     public Controller(Productor productor) {
         this.productor = productor;
     }
-
-    @PostMapping(path = "/publish")
-    public ResponseEntity<String> sendJsonMessage(@RequestBody TransferenciaDTO transferenciaDTO){
-        Productor.sendJsonMessage(transferenciaDTO);
-        return ResponseEntity.ok("Json message sent to RabbitMQ ...");
+    @PostMapping("/publish")
+    public void sendJsonMessage(@RequestBody TransferenciaDTO transferenciaDTO){
+        productor.sendJsonMessage(transferenciaDTO);
     }
 }

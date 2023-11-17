@@ -11,35 +11,22 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ProductorConfig {
-
-    @Value("${filaTransferencia}")
-    private String jsonQueue;
-
-    @Value("${filaTransferencia}")
-    private String exchange;
-
-    @Value("${filaTransferencia}")
-    private String routingJsonKey;
-
-    // spring bean for queue (store json messages)
     @Bean
     public Queue jsonQueue(){
-        return new Queue(jsonQueue);
+        return new Queue("cola.transferencia");
     }
 
-    // spring bean for rabbitmq exchange
     @Bean
     public TopicExchange exchange(){
-        return new TopicExchange(exchange);
+        return new TopicExchange("filaTransferencia");
     }
 
-    // binding between json queue and exchange using routing key
     @Bean
     public Binding jsonBinding(){
         return BindingBuilder
                 .bind(jsonQueue())
                 .to(exchange())
-                .with(routingJsonKey);
+                .with("transferir");
     }
 
     @Bean
@@ -49,8 +36,8 @@ public class ProductorConfig {
 
     @Bean
     public AmqpTemplate amqpTemplate(ConnectionFactory connectionFactory){
-        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        rabbitTemplate.setMessageConverter(converter());
-        return rabbitTemplate;
+        RabbitTemplate amqpTemplate = new RabbitTemplate(connectionFactory);
+        amqpTemplate.setMessageConverter(converter());
+        return amqpTemplate;
     }
 }
